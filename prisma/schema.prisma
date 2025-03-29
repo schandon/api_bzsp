@@ -30,11 +30,12 @@ model produto {
   id                 Int               @id @default(autoincrement())
   nome               String
   preco              Float
-  quantidade_estoque Int
+  quantidade_estoque Float
   created_at         DateTime          @default(now())
   updated_at         DateTime          @updatedAt
   itens_venda        itens_venda[]
   itens_orcamento    itens_orcamento[]
+  devolucao          devolucao[]
 }
 
 model venda {
@@ -47,6 +48,7 @@ model venda {
   updated_at  DateTime      @updatedAt
   finalizada  Boolean
   itens_venda itens_venda[]
+  devolucao   devolucao[]
 }
 
 model itens_venda {
@@ -87,4 +89,17 @@ model itens_orcamento {
   produto        produto   @relation(fields: [fk_produto], references: [id])
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
+}
+
+model devolucao {
+  id             String   @id @default(uuid())
+  fk_venda       String
+  fk_produto     Int
+  quantidade     Float
+  motivo         String?
+  data_devolucao DateTime @default(now())
+  venda          venda    @relation(fields: [fk_venda], references: [id])
+  produto        produto  @relation(fields: [fk_produto], references: [id])
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 }
