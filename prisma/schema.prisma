@@ -6,3 +6,85 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model cliente {
+  id       String @id @default(uuid())
+  cpf      String
+  cep      String
+  endereco String
+  bairro   String
+  cidade   String
+  estado   String
+  telefone String
+  celular  String
+
+  data_nascimento DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  venda     venda[]
+  orcamento orcamento[]
+}
+
+model produto {
+  id                 Int               @id @default(autoincrement())
+  nome               String
+  preco              Float
+  quantidade_estoque Int
+  created_at         DateTime          @default(now())
+  updated_at         DateTime          @updatedAt
+  itens_venda        itens_venda[]
+  itens_orcamento    itens_orcamento[]
+}
+
+model venda {
+  id          String        @id @default(uuid())
+  fk_cliente  String
+  cliente     cliente       @relation(fields: [fk_cliente], references: [id])
+  data_venda  Float
+  valor_total Float
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  finalizada  Boolean
+  itens_venda itens_venda[]
+}
+
+model itens_venda {
+  id             String @id @default(uuid())
+  quantidade     Float
+  preco_unitario Float
+  subtotal       Float
+
+  fk_venda   String
+  venda      venda   @relation(fields: [fk_venda], references: [id])
+  fk_produto Int
+  produto    produto @relation(fields: [fk_produto], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model orcamento {
+  id              String            @id @default(uuid())
+  fk_cliente      String
+  cliente         cliente           @relation(fields: [fk_cliente], references: [id])
+  data_orcamento  DateTime
+  validade        Boolean
+  valor_total     Float
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  itens_orcamento itens_orcamento[]
+}
+
+model itens_orcamento {
+  id             String    @id @default(uuid())
+  quantidade     Float
+  preco_unitario Float
+  subtotal       Float
+  fk_orcamento   String
+  orcamento      orcamento @relation(fields: [fk_orcamento], references: [id])
+  fk_produto     Int
+  produto        produto   @relation(fields: [fk_produto], references: [id])
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+}
